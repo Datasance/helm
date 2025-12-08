@@ -14,6 +14,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- /* Validate required auth fields so installs fail fast when omitted */ -}}
+  {{- $auth := .Values.controlplane.spec.auth }}
+  {{- required "controlplane.spec.auth.url is required" $auth.url }}
+  {{- required "controlplane.spec.auth.realm is required" $auth.realm }}
+  {{- required "controlplane.spec.auth.realmKey is required" $auth.realmKey }}
+  {{- required "controlplane.spec.auth.ssl is required" $auth.ssl }}
+  {{- required "controlplane.spec.auth.controllerClient is required" $auth.controllerClient }}
+  {{- required "controlplane.spec.auth.controllerSecret is required" $auth.controllerSecret }}
+  {{- required "controlplane.spec.auth.viewerClient is required" $auth.viewerClient }}
   {{- with .Values.controlplane.spec }}
   {{- toYaml . | nindent 2 }}
   {{- end }}

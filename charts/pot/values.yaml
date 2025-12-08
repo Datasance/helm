@@ -1,6 +1,6 @@
 # Global overrides
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "iofog-operator"
+fullnameOverride: "iofog-operator"
 
 imagePullSecrets: []
 
@@ -16,7 +16,7 @@ operator:
   imagePullPolicy: Always
   serviceAccount:
     create: true
-    name: ""
+    name: "iofog-operator"
     annotations: {}
   podAnnotations: {}
   podLabels: {}
@@ -39,16 +39,17 @@ controlplane:
   spec:
     replicas:
       controller: 1
-    database:
-      provider: postgres
-      user: ""
-      host: ""
-      port: 5432
-      password: ""
-      databaseName: ""
-      ssl: false
-      ca: ""
+    # database:
+    #   provider: postgres
+    #   user: ""
+    #   host: ""
+    #   port: 5432
+    #   password: ""
+    #   databaseName: ""
+    #   ssl: false
+    #   ca: ""
     auth:
+      # REQUIRED: set all auth fields (Keycloak / OpenID Connect Client identity)
       url: ""
       realm: ""
       realmKey: ""
@@ -57,40 +58,40 @@ controlplane:
       controllerSecret: ""
       viewerClient: ""
     events:
-      auditEnabled: false
-      retentionDays: 30
-      cleanupInterval: 24
+      auditEnabled: true
+      retentionDays: 14
+      cleanupInterval: 86400
       captureIpAddress: true
     images:
-      pullSecret: ""
-      controller: ""
-      routerAdaptor: ""
-      router: ""
+      # pullSecret: ""
+      controller: "ghcr.io/datasance/controller:3.5.11"
+      routerAdaptor: "ghcr.io/datasance/router-adaptor:3.5.2"
+      router: "ghcr.io/datasance/router:3.5.2"
     services:
       controller:
         type: LoadBalancer
-        address: ""
-        annotations: {}
+        # address: ""
+        # annotations: {}
       router:
         type: LoadBalancer
-        address: ""
-        annotations: {}
+        # address: ""
+        # annotations: {}
     controller:
-      pidBaseDir: ""
-      ecnViewerPort: 0
-      ecnViewerUrl: ""
+      # pidBaseDir: ""
+      # ecnViewerPort: 0
+      # ecnViewerUrl: ""
       https: false
-      secretName: ""
-      logLevel: ""
-    ingresses:
-      controller:
-        annotations: {}
-        ingressClassName: ""
-        host: ""
-        secretName: ""
-      router:
-        address: ""
-        messagePort: 5671
-        interiorPort: 55671
-        edgePort: 45671
+      # secretName: ""
+      logLevel: "info"
+    # ingresses:
+    #   controller:
+    #     annotations: {}
+    #     ingressClassName: ""
+    #     host: ""
+    #     secretName: ""
+    #   router:
+    #     address: ""
+    #     messagePort: 5671
+    #     interiorPort: 55671
+    #     edgePort: 45671
 
