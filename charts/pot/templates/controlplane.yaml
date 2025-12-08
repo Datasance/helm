@@ -1,0 +1,21 @@
+{{- if .Values.controlplane.create }}
+apiVersion: datasance.com/v3
+kind: ControlPlane
+metadata:
+  name: {{ default (include "pot.fullname" .) .Values.controlplane.name }}
+  namespace: {{ default .Release.Namespace .Values.controlplane.namespace }}
+  labels:
+    {{- include "pot.labels" . | nindent 4 }}
+    {{- with .Values.controlplane.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.controlplane.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.controlplane.spec }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}
+

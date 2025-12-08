@@ -1,0 +1,96 @@
+# Global overrides
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+crds:
+  install: true
+
+rbac:
+  create: true
+
+operator:
+  replicaCount: 1
+  image: ghcr.io/datasance/operator:3.5.4
+  imagePullPolicy: Always
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  imagePullSecrets: []
+  extraEnv: []
+  extraArgs: []
+
+controlplane:
+  create: true
+  name: pot
+  namespace: ""
+  annotations: {}
+  labels: {}
+  spec:
+    replicas:
+      controller: 1
+    database:
+      provider: postgres
+      user: ""
+      host: ""
+      port: 5432
+      password: ""
+      databaseName: ""
+      ssl: false
+      ca: ""
+    auth:
+      url: ""
+      realm: ""
+      realmKey: ""
+      ssl: ""
+      controllerClient: ""
+      controllerSecret: ""
+      viewerClient: ""
+    events:
+      auditEnabled: false
+      retentionDays: 30
+      cleanupInterval: 24
+      captureIpAddress: true
+    images:
+      pullSecret: ""
+      controller: ""
+      routerAdaptor: ""
+      router: ""
+    services:
+      controller:
+        type: LoadBalancer
+        address: ""
+        annotations: {}
+      router:
+        type: LoadBalancer
+        address: ""
+        annotations: {}
+    controller:
+      pidBaseDir: ""
+      ecnViewerPort: 0
+      ecnViewerUrl: ""
+      https: false
+      secretName: ""
+      logLevel: ""
+    ingresses:
+      controller:
+        annotations: {}
+        ingressClassName: ""
+        host: ""
+        secretName: ""
+      router:
+        address: ""
+        messagePort: 5671
+        interiorPort: 55671
+        edgePort: 45671
+

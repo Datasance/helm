@@ -1,0 +1,37 @@
+name: Release Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Package chart
+        run: |
+          mkdir -p _dist
+          helm lint charts/pot
+          helm package charts/pot --destination _dist
+          helm repo index _dist --url https://datasance.github.io/helm
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_dist
+          publish_branch: gh-pages
+
