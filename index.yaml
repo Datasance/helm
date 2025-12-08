@@ -1,0 +1,24 @@
+apiVersion: v1
+entries:
+  pot:
+  - annotations:
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/Datasance/iofog-operator
+      artifacthub.io/maintainers: |
+        - name: Datasance
+          email: support@datasance.com
+    apiVersion: v2
+    appVersion: latest
+    created: "2025-12-08T11:23:14.280261891Z"
+    description: Helm chart for Datasance PoT (ioFog operator) and ControlPlane
+    digest: febc6e702a0c8d050a1e1cd2d474c046418e414fe84643e16eb60c8ca139777a
+    home: https://github.com/Datasance/helm
+    name: pot
+    sources:
+    - https://github.com/Datasance/iofog-operator
+    type: application
+    urls:
+    - https://datasance.github.io/helm/pot-3.5.4.tgz
+    version: 3.5.4
+generated: "2025-12-08T11:23:14.279645488Z"
