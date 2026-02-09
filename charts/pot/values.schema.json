@@ -1,0 +1,349 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Datasance PoT (ioFog Operator) Helm Values",
+  "description": "Configuration values for the Datasance PoT chart. The operator watches ControlPlane custom resources; the created ControlPlane name defaults to the Helm release name.",
+  "type": "object",
+  "properties": {
+    "nameOverride": {
+      "type": "string",
+      "title": "Name Override",
+      "description": "Override the chart name used in resource names and labels.",
+      "default": "iofog-operator"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "title": "Full Name Override",
+      "description": "Override the full name used for operator resources (e.g. deployment, service account).",
+      "default": "iofog-operator"
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "title": "Image Pull Secrets",
+      "description": "Global image pull secrets for pulling container images.",
+      "items": { "type": "object" }
+    },
+    "crds": {
+      "type": "object",
+      "title": "Custom Resource Definitions",
+      "description": "Control installation of the ControlPlane CRD.",
+      "properties": {
+        "install": {
+          "type": "boolean",
+          "title": "Install CRDs",
+          "description": "Whether to install the ControlPlane CRD with this chart.",
+          "default": true
+        }
+      }
+    },
+    "rbac": {
+      "type": "object",
+      "title": "RBAC",
+      "description": "Role-based access control for the operator.",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "title": "Create RBAC",
+          "description": "Whether to create RBAC resources (ClusterRole, Role, bindings).",
+          "default": true
+        }
+      }
+    },
+    "operator": {
+      "type": "object",
+      "title": "Operator",
+      "description": "ioFog operator deployment configuration.",
+      "properties": {
+        "replicaCount": {
+          "type": "integer",
+          "title": "Replica Count",
+          "description": "Number of operator replicas.",
+          "default": 1,
+          "minimum": 0
+        },
+        "image": {
+          "type": "string",
+          "title": "Operator Image",
+          "description": "Container image for the operator.",
+          "default": "ghcr.io/datasance/operator:3.6.0"
+        },
+        "imagePullPolicy": {
+          "type": "string",
+          "title": "Image Pull Policy",
+          "description": "Image pull policy for the operator.",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "default": "Always"
+        },
+        "serviceAccount": {
+          "type": "object",
+          "title": "Service Account",
+          "properties": {
+            "create": {
+              "type": "boolean",
+              "title": "Create Service Account",
+              "default": true
+            },
+            "name": {
+              "type": "string",
+              "title": "Service Account Name",
+              "default": "iofog-operator"
+            },
+            "annotations": {
+              "type": "object",
+              "title": "Annotations",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        },
+        "podAnnotations": {
+          "type": "object",
+          "title": "Pod Annotations",
+          "additionalProperties": { "type": "string" }
+        },
+        "podLabels": {
+          "type": "object",
+          "title": "Pod Labels",
+          "additionalProperties": { "type": "string" }
+        },
+        "podSecurityContext": {
+          "type": "object",
+          "title": "Pod Security Context"
+        },
+        "securityContext": {
+          "type": "object",
+          "title": "Container Security Context"
+        },
+        "resources": {
+          "type": "object",
+          "title": "Resources",
+          "description": "CPU/memory resource requests and limits."
+        },
+        "nodeSelector": {
+          "type": "object",
+          "title": "Node Selector",
+          "additionalProperties": { "type": "string" }
+        },
+        "tolerations": {
+          "type": "array",
+          "title": "Tolerations",
+          "items": { "type": "object" }
+        },
+        "affinity": {
+          "type": "object",
+          "title": "Affinity"
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "title": "Image Pull Secrets",
+          "items": { "type": "object" }
+        },
+        "extraEnv": {
+          "type": "array",
+          "title": "Extra Environment Variables",
+          "items": { "type": "object" }
+        },
+        "extraArgs": {
+          "type": "array",
+          "title": "Extra Arguments",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "controlplane": {
+      "type": "object",
+      "title": "ControlPlane",
+      "description": "ControlPlane custom resource to create. Its name defaults to the Helm release name so the operator watches this instance.",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "title": "Create ControlPlane",
+          "description": "Whether to create a ControlPlane CR instance.",
+          "default": true
+        },
+        "name": {
+          "type": "string",
+          "title": "ControlPlane Name",
+          "description": "Name of the ControlPlane resource. Defaults to the Helm release name if unset.",
+          "default": "pot"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Namespace",
+          "description": "Namespace for the ControlPlane resource. Defaults to the release namespace."
+        },
+        "annotations": {
+          "type": "object",
+          "title": "Annotations",
+          "additionalProperties": { "type": "string" }
+        },
+        "labels": {
+          "type": "object",
+          "title": "Labels",
+          "additionalProperties": { "type": "string" }
+        },
+        "spec": {
+          "type": "object",
+          "title": "ControlPlane Spec",
+          "description": "Desired state of the ControlPlane (auth, controller, database, services, etc.).",
+          "properties": {
+            "replicas": {
+              "type": "object",
+              "title": "Replicas",
+              "properties": {
+                "controller": {
+                  "type": "integer",
+                  "title": "Controller Replicas",
+                  "default": 1,
+                  "minimum": 0
+                }
+              }
+            },
+            "auth": {
+              "type": "object",
+              "title": "Auth (Keycloak / OpenID Connect)",
+              "description": "Keycloak client configuration for Controller and ECN Viewer. All fields are required when controlplane.create is true.",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "title": "Auth URL",
+                  "description": "Keycloak / OIDC server URL."
+                },
+                "realm": {
+                  "type": "string",
+                  "title": "Realm"
+                },
+                "realmKey": {
+                  "type": "string",
+                  "title": "Realm Key"
+                },
+                "ssl": {
+                  "type": "string",
+                  "title": "SSL"
+                },
+                "controllerClient": {
+                  "type": "string",
+                  "title": "Controller Client"
+                },
+                "controllerSecret": {
+                  "type": "string",
+                  "title": "Controller Secret"
+                },
+                "viewerClient": {
+                  "type": "string",
+                  "title": "Viewer Client"
+                }
+              },
+              "required": ["url", "realm", "realmKey", "ssl", "controllerClient", "controllerSecret", "viewerClient"]
+            },
+            "database": {
+              "type": "object",
+              "title": "Database",
+              "description": "Database configuration for ioFog Controller (e.g. postgres).",
+              "properties": {
+                "provider": { "type": "string", "title": "Provider" },
+                "user": { "type": "string", "title": "User" },
+                "host": { "type": "string", "title": "Host" },
+                "port": { "type": "integer", "title": "Port" },
+                "password": { "type": "string", "title": "Password" },
+                "databaseName": { "type": "string", "title": "Database Name" },
+                "ssl": { "type": "boolean", "title": "SSL" },
+                "ca": { "type": "string", "title": "CA" }
+              }
+            },
+            "events": {
+              "type": "object",
+              "title": "Events",
+              "description": "Event retention and audit settings.",
+              "properties": {
+                "auditEnabled": { "type": "boolean", "title": "Audit Enabled", "default": true },
+                "retentionDays": { "type": "integer", "title": "Retention Days", "default": 14 },
+                "cleanupInterval": { "type": "integer", "title": "Cleanup Interval", "default": 86400 },
+                "captureIpAddress": { "type": "boolean", "title": "Capture IP Address", "default": true }
+              }
+            },
+            "images": {
+              "type": "object",
+              "title": "Images",
+              "description": "Container images for Controller and Router.",
+              "properties": {
+                "pullSecret": { "type": "string", "title": "Pull Secret" },
+                "controller": {
+                  "type": "string",
+                  "title": "Controller Image",
+                  "default": "ghcr.io/datasance/controller:3.6.0"
+                },
+                "router": {
+                  "type": "string",
+                  "title": "Router Image",
+                  "default": "ghcr.io/datasance/router:3.6.0"
+                }
+              }
+            },
+            "services": {
+              "type": "object",
+              "title": "Services",
+              "description": "Service types (e.g. LoadBalancer) for Controller and Router.",
+              "properties": {
+                "controller": {
+                  "type": "object",
+                  "title": "Controller Service",
+                  "properties": {
+                    "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
+                    "address": { "type": "string", "title": "Address" },
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
+                  }
+                },
+                "router": {
+                  "type": "object",
+                  "title": "Router Service",
+                  "properties": {
+                    "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
+                    "address": { "type": "string", "title": "Address" },
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
+                  }
+                }
+              }
+            },
+            "controller": {
+              "type": "object",
+              "title": "Controller Config",
+              "description": "Runtime configuration for ioFog Controller.",
+              "properties": {
+                "https": { "type": "boolean", "title": "HTTPS", "default": false },
+                "logLevel": { "type": "string", "title": "Log Level", "default": "info" },
+                "pidBaseDir": { "type": "string", "title": "PID Base Dir" },
+                "ecnViewerPort": { "type": "integer", "title": "ECN Viewer Port" },
+                "ecnViewerUrl": { "type": "string", "title": "ECN Viewer URL" },
+                "secretName": { "type": "string", "title": "Secret Name" }
+              }
+            },
+            "ingresses": {
+              "type": "object",
+              "title": "Ingresses",
+              "description": "Ingress configuration for Controller and Router.",
+              "properties": {
+                "controller": {
+                  "type": "object",
+                  "properties": {
+                    "annotations": { "type": "object" },
+                    "ingressClassName": { "type": "string" },
+                    "host": { "type": "string" },
+                    "secretName": { "type": "string" }
+                  }
+                },
+                "router": {
+                  "type": "object",
+                  "properties": {
+                    "address": { "type": "string" },
+                    "messagePort": { "type": "integer" },
+                    "interiorPort": { "type": "integer" },
+                    "edgePort": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

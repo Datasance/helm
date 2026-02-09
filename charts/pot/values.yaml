@@ -12,7 +12,7 @@ rbac:
 
 operator:
   replicaCount: 1
-  image: ghcr.io/datasance/operator:3.5.4
+  image: ghcr.io/datasance/operator:3.6.0
   imagePullPolicy: Always
   serviceAccount:
     create: true
@@ -64,9 +64,8 @@ controlplane:
       captureIpAddress: true
     images:
       # pullSecret: ""
-      controller: "ghcr.io/datasance/controller:3.5.11"
-      routerAdaptor: "ghcr.io/datasance/router-adaptor:3.5.2"
-      router: "ghcr.io/datasance/router:3.5.2"
+      controller: "ghcr.io/datasance/controller:3.6.0"
+      router: "ghcr.io/datasance/router:3.6.0"
     services:
       controller:
         type: LoadBalancer

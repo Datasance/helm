@@ -85,7 +85,6 @@ Common `--set` flags:
 - ControlPlane images:
   - `controlplane.spec.images.pullSecret=<secret>`
   - `controlplane.spec.images.controller=<image>`
-  - `controlplane.spec.images.routerAdaptor=<image>`
   - `controlplane.spec.images.router=<image>`
 - ControlPlane events:
   - `controlplane.spec.events.auditEnabled=true|false`

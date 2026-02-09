@@ -138,8 +138,6 @@ spec:
                       type: string
                     router:
                       type: string
-                    routerAdaptor:
-                      type: string
                   type: object
                 ingresses:
                   description: Ingresses allow Router and Port Manager to configure

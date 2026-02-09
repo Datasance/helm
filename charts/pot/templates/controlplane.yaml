@@ -2,7 +2,7 @@
 apiVersion: datasance.com/v3
 kind: ControlPlane
 metadata:
-  name: {{ default (include "pot.fullname" .) .Values.controlplane.name }}
+  name: {{ default .Release.Name .Values.controlplane.name }}
   namespace: {{ default .Release.Namespace .Values.controlplane.namespace }}
   labels:
     {{- include "pot.labels" . | nindent 4 }}
