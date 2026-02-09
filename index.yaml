@@ -10,9 +10,9 @@ entries:
           email: support@datasance.com
     apiVersion: v2
     appVersion: latest
-    created: "2026-02-09T14:33:41.611743941Z"
+    created: "2026-02-09T14:34:18.954012373Z"
     description: Helm chart for Datasance PoT (ioFog operator) and ControlPlane
-    digest: c760e5d9fc7dedef602c6efbcd0626386e2942233e38bc54d5c8c376e7201b77
+    digest: 29477f519360b942fc02bdba9577f30f26f4314adc64584cb51b9357447524c8
     home: https://github.com/Datasance/helm
     name: pot
     sources:
@@ -21,4 +21,4 @@ entries:
     urls:
     - https://datasance.github.io/helm/pot-3.5.4.tgz
     version: 3.5.4
-generated: "2026-02-09T14:33:41.611141786Z"
+generated: "2026-02-09T14:34:18.95336141Z"
