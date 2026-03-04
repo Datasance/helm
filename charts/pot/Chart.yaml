@@ -2,8 +2,8 @@ apiVersion: v2
 name: pot
 description: Helm chart for Datasance PoT (ioFog operator) and ControlPlane
 type: application
-version: 3.5.4
-appVersion: "latest"
+version: 3.7.0
+appVersion: "3.7.0"
 home: https://github.com/Datasance/helm
 sources:
   - https://github.com/Datasance/iofog-operator

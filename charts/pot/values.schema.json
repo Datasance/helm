@@ -64,7 +64,7 @@
           "type": "string",
           "title": "Operator Image",
           "description": "Container image for the operator.",
-          "default": "ghcr.io/datasance/operator:3.6.0"
+          "default": "ghcr.io/datasance/operator:3.7.0"
         },
         "imagePullPolicy": {
           "type": "string",
@@ -183,7 +183,7 @@
         "spec": {
           "type": "object",
           "title": "ControlPlane Spec",
-          "description": "Desired state of the ControlPlane (auth, controller, database, services, etc.).",
+          "description": "Desired state of the ControlPlane (auth, controller, database, services, nats, vault, etc.).",
           "properties": {
             "replicas": {
               "type": "object",
@@ -194,6 +194,12 @@
                   "title": "Controller Replicas",
                   "default": 1,
                   "minimum": 0
+                },
+                "nats": {
+                  "type": "integer",
+                  "title": "NATS Replicas",
+                  "description": "Number of NATS server replicas (default 2, min 2 when NATS enabled).",
+                  "minimum": 2
                 }
               }
             },
@@ -202,42 +208,20 @@
               "title": "Auth (Keycloak / OpenID Connect)",
               "description": "Keycloak client configuration for Controller and ECN Viewer. All fields are required when controlplane.create is true.",
               "properties": {
-                "url": {
-                  "type": "string",
-                  "title": "Auth URL",
-                  "description": "Keycloak / OIDC server URL."
-                },
-                "realm": {
-                  "type": "string",
-                  "title": "Realm"
-                },
-                "realmKey": {
-                  "type": "string",
-                  "title": "Realm Key"
-                },
-                "ssl": {
-                  "type": "string",
-                  "title": "SSL"
-                },
-                "controllerClient": {
-                  "type": "string",
-                  "title": "Controller Client"
-                },
-                "controllerSecret": {
-                  "type": "string",
-                  "title": "Controller Secret"
-                },
-                "viewerClient": {
-                  "type": "string",
-                  "title": "Viewer Client"
-                }
+                "url": { "type": "string", "title": "Auth URL" },
+                "realm": { "type": "string", "title": "Realm" },
+                "realmKey": { "type": "string", "title": "Realm Key" },
+                "ssl": { "type": "string", "title": "SSL" },
+                "controllerClient": { "type": "string", "title": "Controller Client" },
+                "controllerSecret": { "type": "string", "title": "Controller Secret" },
+                "viewerClient": { "type": "string", "title": "Viewer Client" }
               },
               "required": ["url", "realm", "realmKey", "ssl", "controllerClient", "controllerSecret", "viewerClient"]
             },
             "database": {
               "type": "object",
               "title": "Database",
-              "description": "Database configuration for ioFog Controller (e.g. postgres).",
+              "description": "Database configuration for ioFog Controller (required in CRD v3).",
               "properties": {
                 "provider": { "type": "string", "title": "Provider" },
                 "user": { "type": "string", "title": "User" },
@@ -263,25 +247,18 @@
             "images": {
               "type": "object",
               "title": "Images",
-              "description": "Container images for Controller and Router.",
+              "description": "Container images for Controller, Router, and NATS.",
               "properties": {
                 "pullSecret": { "type": "string", "title": "Pull Secret" },
-                "controller": {
-                  "type": "string",
-                  "title": "Controller Image",
-                  "default": "ghcr.io/datasance/controller:3.6.0"
-                },
-                "router": {
-                  "type": "string",
-                  "title": "Router Image",
-                  "default": "ghcr.io/datasance/router:3.6.0"
-                }
+                "controller": { "type": "string", "title": "Controller Image", "default": "ghcr.io/datasance/controller:3.7.0" },
+                "router": { "type": "string", "title": "Router Image", "default": "ghcr.io/datasance/router:3.7.0" },
+                "nats": { "type": "string", "title": "NATS Image", "default": "ghcr.io/datasance/nats:2.12.4" }
               }
             },
             "services": {
               "type": "object",
               "title": "Services",
-              "description": "Service types (e.g. LoadBalancer) for Controller and Router.",
+              "description": "Service types and options for Controller, Router, NATS, and NATS Server.",
               "properties": {
                 "controller": {
                   "type": "object",
@@ -289,7 +266,8 @@
                   "properties": {
                     "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
                     "address": { "type": "string", "title": "Address" },
-                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+                    "externalTrafficPolicy": { "type": "string", "title": "External Traffic Policy", "description": "Local or Cluster" }
                   }
                 },
                 "router": {
@@ -298,7 +276,45 @@
                   "properties": {
                     "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
                     "address": { "type": "string", "title": "Address" },
-                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+                    "externalTrafficPolicy": { "type": "string", "title": "External Traffic Policy" }
+                  }
+                },
+                "nats": {
+                  "type": "object",
+                  "title": "NATS Service",
+                  "properties": {
+                    "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
+                    "address": { "type": "string", "title": "Address" },
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+                    "externalTrafficPolicy": { "type": "string", "title": "External Traffic Policy" }
+                  }
+                },
+                "natsServer": {
+                  "type": "object",
+                  "title": "NATS Server Service",
+                  "properties": {
+                    "type": { "type": "string", "title": "Type", "default": "LoadBalancer" },
+                    "address": { "type": "string", "title": "Address" },
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+                    "externalTrafficPolicy": { "type": "string", "title": "External Traffic Policy" }
+                  }
+                }
+              }
+            },
+            "nats": {
+              "type": "object",
+              "title": "NATS Hub",
+              "description": "NATS hub configuration (StatefulSet, JetStream).",
+              "properties": {
+                "enabled": { "type": "boolean", "title": "Enabled", "default": true },
+                "jetStream": {
+                  "type": "object",
+                  "title": "JetStream",
+                  "properties": {
+                    "memoryStoreSize": { "type": "string", "title": "Memory Store Size", "description": "Default 1Gi" },
+                    "storageSize": { "type": "string", "title": "Storage Size", "description": "Default 10Gi" },
+                    "storageClassName": { "type": "string", "title": "Storage Class Name" }
                   }
                 }
               }
@@ -311,6 +327,7 @@
                 "https": { "type": "boolean", "title": "HTTPS", "default": false },
                 "logLevel": { "type": "string", "title": "Log Level", "default": "info" },
                 "pidBaseDir": { "type": "string", "title": "PID Base Dir" },
+                "ecn": { "type": "string", "title": "ECN" },
                 "ecnViewerPort": { "type": "integer", "title": "ECN Viewer Port" },
                 "ecnViewerUrl": { "type": "string", "title": "ECN Viewer URL" },
                 "secretName": { "type": "string", "title": "Secret Name" }
@@ -319,12 +336,12 @@
             "ingresses": {
               "type": "object",
               "title": "Ingresses",
-              "description": "Ingress configuration for Controller and Router.",
+              "description": "Ingress configuration for Controller, Router, and NATS.",
               "properties": {
                 "controller": {
                   "type": "object",
                   "properties": {
-                    "annotations": { "type": "object" },
+                    "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
                     "ingressClassName": { "type": "string" },
                     "host": { "type": "string" },
                     "secretName": { "type": "string" }
@@ -337,6 +354,64 @@
                     "messagePort": { "type": "integer" },
                     "interiorPort": { "type": "integer" },
                     "edgePort": { "type": "integer" }
+                  }
+                },
+                "nats": {
+                  "type": "object",
+                  "description": "NATS ingress (address and ports for hub registration).",
+                  "properties": {
+                    "address": { "type": "string" },
+                    "serverPort": { "type": "integer" },
+                    "clusterPort": { "type": "integer" },
+                    "leafPort": { "type": "integer" },
+                    "mqttPort": { "type": "integer" },
+                    "httpPort": { "type": "integer" }
+                  }
+                }
+              }
+            },
+            "vault": {
+              "type": "object",
+              "title": "Vault",
+              "description": "Optional vault provider for secrets (hashicorp, aws, azure, google).",
+              "properties": {
+                "enabled": { "type": "boolean", "title": "Enabled" },
+                "provider": {
+                  "type": "string",
+                  "title": "Provider",
+                  "description": "hashicorp | openbao | vault | aws | aws-secrets-manager | azure | azure-key-vault | google | google-secret-manager"
+                },
+                "basePath": { "type": "string", "title": "Base Path", "description": "e.g. pot/$namespace/secrets" },
+                "hashicorp": {
+                  "type": "object",
+                  "properties": {
+                    "address": { "type": "string" },
+                    "mount": { "type": "string" },
+                    "token": { "type": "string" }
+                  }
+                },
+                "aws": {
+                  "type": "object",
+                  "properties": {
+                    "accessKeyId": { "type": "string" },
+                    "accessKey": { "type": "string" },
+                    "region": { "type": "string" }
+                  }
+                },
+                "azure": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" },
+                    "tenantId": { "type": "string" },
+                    "clientId": { "type": "string" },
+                    "clientSecret": { "type": "string" }
+                  }
+                },
+                "google": {
+                  "type": "object",
+                  "properties": {
+                    "projectId": { "type": "string" },
+                    "credentials": { "type": "string" }
                   }
                 }
               }

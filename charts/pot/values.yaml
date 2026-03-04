@@ -12,7 +12,7 @@ rbac:
 
 operator:
   replicaCount: 1
-  image: ghcr.io/datasance/operator:3.6.0
+  image: ghcr.io/datasance/operator:3.7.0
   imagePullPolicy: Always
   serviceAccount:
     create: true
@@ -37,19 +37,25 @@ controlplane:
   annotations: {}
   labels: {}
   spec:
+    # --- replicas ---
     replicas:
       controller: 1
-    # database:
-    #   provider: postgres
-    #   user: ""
-    #   host: ""
-    #   port: 5432
-    #   password: ""
-    #   databaseName: ""
-    #   ssl: false
-    #   ca: ""
+      nats: 2
+      # nats: 2  # NATS server replicas (default 2, min 2 when NATS enabled)
+
+    # --- database (required in ControlPlane CRD v3) ---
+    database:
+      provider: sqlite
+      user: ""
+      host: ""
+      port: 0
+      password: ""
+      databaseName: ""
+      ssl: false
+      ca: ""
+
+    # --- auth (required) ---
     auth:
-      # REQUIRED: set all auth fields (Keycloak / OpenID Connect Client identity)
       url: ""
       realm: ""
       realmKey: ""
@@ -57,40 +63,100 @@ controlplane:
       controllerClient: ""
       controllerSecret: ""
       viewerClient: ""
+
+    # --- events ---
     events:
       auditEnabled: true
       retentionDays: 14
       cleanupInterval: 86400
       captureIpAddress: true
+
+    # --- images ---
     images:
+      controller: "ghcr.io/datasance/controller:3.7.0"
+      router: "ghcr.io/datasance/router:3.7.0"
+      nats: "ghcr.io/datasance/nats:2.12.4"
       # pullSecret: ""
-      controller: "ghcr.io/datasance/controller:3.6.0"
-      router: "ghcr.io/datasance/router:3.6.0"
+
+    # --- services ---
     services:
       controller:
         type: LoadBalancer
         # address: ""
         # annotations: {}
+        # externalTrafficPolicy: ""  # "Local" or "Cluster" — set in overrides to emit
       router:
         type: LoadBalancer
         # address: ""
         # annotations: {}
+        # externalTrafficPolicy: ""
+      nats:
+        type: LoadBalancer
+        # address: ""
+        # annotations: {}
+        # externalTrafficPolicy: ""
+      natsServer:
+        type: LoadBalancer
+        # address: ""
+        # annotations: {}
+        # externalTrafficPolicy: ""
+
+    # --- nats (NATS hub / StatefulSet) ---
+    nats:
+      enabled: true
+      # jetStream:
+      #   memoryStoreSize: "1Gi"
+      #   storageSize: "10Gi"
+      #   storageClassName: ""
+
+    # --- controller runtime ---
     controller:
+      https: false
+      logLevel: "info"
       # pidBaseDir: ""
+      # ecn: ""
       # ecnViewerPort: 0
       # ecnViewerUrl: ""
-      https: false
       # secretName: ""
-      logLevel: "info"
+
+    # --- ingresses (optional; use when not relying on LoadBalancer/NodePort) ---
     # ingresses:
     #   controller:
-    #     annotations: {}
-    #     ingressClassName: ""
     #     host: ""
+    #     ingressClassName: ""
     #     secretName: ""
+    #     annotations: {}
     #   router:
     #     address: ""
     #     messagePort: 5671
     #     interiorPort: 55671
     #     edgePort: 45671
+    #   nats:
+    #     address: ""
+    #     serverPort: 4222
+    #     clusterPort: 6222
+    #     leafPort: 7422
+    #     mqttPort: 8883
+    #     httpPort: 8222
 
+    # --- vault (optional secrets provider) ---
+    # vault:
+    #   enabled: false
+    #   provider: ""  # hashicorp | openbao | vault | aws | aws-secrets-manager | azure | azure-key-vault | google | google-secret-manager
+    #   basePath: ""  # e.g. pot/$namespace/secrets
+    #   hashicorp:
+    #     address: ""
+    #     mount: ""
+    #     token: ""
+    #   aws:
+    #     accessKeyId: ""
+    #     accessKey: ""
+    #     region: ""
+    #   azure:
+    #     url: ""
+    #     tenantId: ""
+    #     clientId: ""
+    #     clientSecret: ""
+    #   google:
+    #     projectId: ""
+    #     credentials: ""
