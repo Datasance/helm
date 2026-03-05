@@ -1,6 +1,6 @@
 # Datasance PoT Helm Chart
 
-This chart deploys the Datasance PoT operator (iofog-operator) and optionally creates one `ControlPlane` custom resource instance. It is aligned with [iofog-operator](https://github.com/Datasance/iofog-operator) 3.7.0 (ControlPlane CRD v3, NATS, vault).
+This chart deploys the Datasance PoT operator (iofog-operator) and optionally creates one `ControlPlane` custom resource instance. It is aligned with [iofog-operator](https://github.com/Datasance/iofog-operator) 3.7.1 (ControlPlane CRD v3, NATS, vault).
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ Must be set via values or `--set`:
 
 ### Optional / common overrides
 
-- **Operator**: `operator.image` (default `ghcr.io/datasance/operator:3.7.0`), `operator.replicaCount`, `operator.resources`, `operator.nodeSelector`, `operator.tolerations`, `operator.affinity`, `operator.serviceAccount.create|name`, `operator.imagePullSecrets`
+- **Operator**: `operator.image` (default `ghcr.io/datasance/operator:3.7.1`), `operator.replicaCount`, `operator.resources`, `operator.nodeSelector`, `operator.tolerations`, `operator.affinity`, `operator.serviceAccount.create|name`, `operator.imagePullSecrets`
 - **ControlPlane metadata**: `controlplane.create`, `controlplane.name`, `controlplane.namespace`
 - **Replicas**: `controlplane.spec.replicas.controller`, `controlplane.spec.replicas.nats` (min 2 when NATS enabled)
 - **Images**: `controlplane.spec.images.controller`, `router`, `nats`, `pullSecret`
@@ -94,7 +94,7 @@ helm install pot datasance/pot -n pot --create-namespace \
 
 ```yaml
 operator:
-  image: ghcr.io/datasance/operator:3.7.0
+  image: ghcr.io/datasance/operator:3.7.1
 
 controlplane:
   create: true
