@@ -64,7 +64,7 @@
           "type": "string",
           "title": "Operator Image",
           "description": "Container image for the operator.",
-          "default": "ghcr.io/datasance/operator:3.7.1"
+          "default": "ghcr.io/datasance/operator:3.7.2"
         },
         "imagePullPolicy": {
           "type": "string",

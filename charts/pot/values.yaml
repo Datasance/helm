@@ -12,7 +12,7 @@ rbac:
 
 operator:
   replicaCount: 1
-  image: ghcr.io/datasance/operator:3.7.1
+  image: ghcr.io/datasance/operator:3.7.2
   imagePullPolicy: Always
   serviceAccount:
     create: true
